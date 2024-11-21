@@ -1,9 +1,20 @@
-@if(character.error()) {
-  {{character.error()}}
-}
+<div class="button-block">
+  <button (click)="getRandomCharacter()" class="character-button">Get Random Character</button>
+</div>
+<div class="character-block">
+  @if (character.error()) {
+    {{ character.error() }}
+  }
+  @if (character.value(); as character) {
+    <div class="character">
+      <img src="{{ character.image }}" class="character-image">
+      <h2 class="character-name">{{ character.name }}</h2>
+    </div>
+  }
+  @if (character.isLoading()) {
+    <div class="loader">
+    loading...
+    </div>
+  }
+</div>
 
-@if(character.value(); as character) {
-  {{character.id}}
-}
-
-<button (click)="getRandomCharacter()">Get Random Character</button>

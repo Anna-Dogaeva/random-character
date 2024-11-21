@@ -1,26 +1,30 @@
-import {Component, effect, OnInit, resource, signal} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component, resource, ResourceRef, signal, WritableSignal} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 import {ICharacter} from "./app.interface";
+import {API_URL} from "./app.constants";
 
 @Component({
-    selector: 'app-root',
-    imports: [RouterOutlet],
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
-    standalone: true,
+  selector: 'app-root',
+  imports: [RouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+  standalone: true,
 })
 export class AppComponent {
-  query = signal(0);
-  character = resource<ICharacter, unknown>(
+  query: WritableSignal<number | null> = signal(null);
+  character: ResourceRef<ICharacter> = resource<ICharacter, number | null>(
     {
       request: () => {
         return this.query();
       },
       loader: async ({request, abortSignal}) => {
-        const character = await fetch(`https://rickandmortyapi.com/api/character/${request}`, {
+        if (this.query() === null) {
+          return;
+        }
+        const character = await fetch(API_URL + request, {
           signal: abortSignal,
         });
-        if(!character.ok) {
+        if (!character.ok) {
           throw Error('Could not fetch')
         }
         return await character.json();
